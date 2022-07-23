@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -89,12 +91,20 @@ public class GuessNumberService {
 		return gameReponses;
 
 	}
-	
+
 	public GameResponseBody getAGame(int gameId) {
 		Optional<Game> optionalGame = gameRepo.findById(gameId);
-		if(optionalGame.isEmpty()) throw new GameNotFoundException(gameId);
+		if (optionalGame.isEmpty())
+			throw new GameNotFoundException(gameId);
 		Game game = optionalGame.get();
 		return new GameResponseBody(game);
+	}
+
+	public List<Round> getRoundsOfGame(int gameId) {
+		Optional<Game> optionalGame = gameRepo.findById(gameId);
+		if (optionalGame.isEmpty())
+			throw new GameNotFoundException(gameId);
+		return gameRepo.getRoundsOfGame(gameId, Sort.by(Direction.ASC, "gameId"));
 	}
 
 }

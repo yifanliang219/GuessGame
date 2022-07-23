@@ -3,6 +3,7 @@ package com.yifanliang219.controllers;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,28 +18,45 @@ import com.yifanliang219.services.GuessNumberService;
 
 @RestController
 public class GuessNumberController {
-	
+
 	@Autowired
 	private GuessNumberService service;
-	
+
 	@PostMapping("/begin")
 	public ResponseEntity<String> beginNewGame() {
 		return service.beginNewGame();
 	}
-	
+
 	@PostMapping("/guess")
-	public Round makeAGuess(@RequestBody GuessRequestBody guessRequest) {
-		return service.makeAGuss(guessRequest);
+	public ResponseEntity<Object> makeAGuess(@RequestBody GuessRequestBody guessRequest) {
+		try {
+			return ResponseEntity.ok(service.makeAGuss(guessRequest));
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+		}
 	}
-	
+
 	@GetMapping("/game")
-	public List<GameResponseBody> getAllGames(){
+	public List<GameResponseBody> getAllGames() {
 		return service.getAllGames();
 	}
-	
+
 	@GetMapping("/game/{gameId}")
-	public GameResponseBody getAGame(@PathVariable int gameId) {
-		return service.getAGame(gameId);
+	public ResponseEntity<Object> getAGame(@PathVariable int gameId) {
+		try {
+			return ResponseEntity.ok(service.getAGame(gameId));
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+		}
 	}
-	
+
+	@GetMapping("/rounds/{gameId}")
+	public ResponseEntity<Object> getRoundsOfGame(@PathVariable int gameId) {
+		try {
+			return ResponseEntity.ok(service.getRoundsOfGame(gameId));
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+		}
+	}
+
 }

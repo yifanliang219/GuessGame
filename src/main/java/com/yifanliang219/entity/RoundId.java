@@ -2,6 +2,9 @@ package com.yifanliang219.entity;
 
 import java.io.Serializable;
 
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+
 public class RoundId implements Serializable {
 	
 	private static final long serialVersionUID = -1413041923828339946L;
