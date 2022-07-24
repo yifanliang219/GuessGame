@@ -1,5 +1,6 @@
 package com.yifanliang219.controllers;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.yifanliang219.entity.Game;
 import com.yifanliang219.requests.GuessRequestBody;
 import com.yifanliang219.responses.GameResponseBody;
 import com.yifanliang219.services.GuessNumberService;
@@ -24,8 +26,9 @@ public class GuessNumberController {
 
 	@PostMapping("/begin")
 	public ResponseEntity<String> beginNewGame() {
+		Game newGame = service.beginNewGame();
 		return ResponseEntity.status(HttpStatus.CREATED)
-				.body(service.beginNewGame());
+				.body("New game with gameId=" + newGame.getGameId() + " is created.");
 	}
 
 	@PostMapping("/guess")
@@ -39,13 +42,17 @@ public class GuessNumberController {
 
 	@GetMapping("/game")
 	public List<GameResponseBody> getAllGames() {
-		return service.getAllGames();
+		List<GameResponseBody> gameReponses = new ArrayList<>();
+		Iterable<Game> games = service.getAllGames();
+		games.forEach(game -> gameReponses.add(new GameResponseBody(game)));
+		return gameReponses;
 	}
 
 	@GetMapping("/game/{gameId}")
 	public ResponseEntity<Object> getAGame(@PathVariable int gameId) {
 		try {
-			return ResponseEntity.ok(service.getAGame(gameId));
+			GameResponseBody gameResponseBody = new GameResponseBody(service.getAGame(gameId));
+			return ResponseEntity.ok(gameResponseBody);
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		}
@@ -63,7 +70,8 @@ public class GuessNumberController {
 	@DeleteMapping("delete/{gameId}")
 	public ResponseEntity<Object> deleteAGame(@PathVariable int gameId) {
 		try {
-			return ResponseEntity.ok(service.deleteAGame(gameId));
+			Game deletedGame = service.deleteAGame(gameId);
+			return ResponseEntity.ok("The game with gameId=" + deletedGame.getGameId() + " has been deleted.");
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		}

@@ -17,7 +17,6 @@ import com.yifanliang219.exceptions.GuessFormatException;
 import com.yifanliang219.repo.GuessNumberGameRepo;
 import com.yifanliang219.repo.RoundRepo;
 import com.yifanliang219.requests.GuessRequestBody;
-import com.yifanliang219.responses.GameResponseBody;
 
 @Service
 public class GuessNumberService {
@@ -28,7 +27,7 @@ public class GuessNumberService {
 	@Autowired
 	private RoundRepo roundRepo;
 
-	public String beginNewGame() {
+	public Game beginNewGame() {
 
 		List<Integer> digits = new ArrayList<>(Arrays.asList(new Integer[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }));
 		String answer = "";
@@ -40,7 +39,7 @@ public class GuessNumberService {
 		}
 		Game game = new Game(answer);
 		gameRepo.save(game);
-		return "New game with gameId=" + game.getGameId() + " is created.";
+		return game;
 
 	}
 
@@ -80,21 +79,19 @@ public class GuessNumberService {
 		return round;
 	}
 
-	public List<GameResponseBody> getAllGames() {
+	public Iterable<Game> getAllGames() {
 
 		Iterable<Game> games = gameRepo.findAll();
-		List<GameResponseBody> gameReponses = new ArrayList<>();
-		games.forEach(game -> gameReponses.add(new GameResponseBody(game)));
-		return gameReponses;
+		return games;
 
 	}
 
-	public GameResponseBody getAGame(int gameId) {
+	public Game getAGame(int gameId) {
 		Optional<Game> optionalGame = gameRepo.findById(gameId);
 		if (optionalGame.isEmpty())
 			throw new GameNotFoundException(gameId);
 		Game game = optionalGame.get();
-		return new GameResponseBody(game);
+		return game;
 	}
 
 	public List<Round> getRoundsOfGame(int gameId) {
@@ -104,12 +101,16 @@ public class GuessNumberService {
 		return gameRepo.getRoundsOfGame(gameId, Sort.by(Direction.ASC, "gameId"));
 	}
 	
-	public String deleteAGame(int gameId) {
+	public Game deleteAGame(int gameId) {
 		Optional<Game> optionalGame = gameRepo.findById(gameId);
 		if (optionalGame.isEmpty())
 			throw new GameNotFoundException(gameId);
 		gameRepo.deleteById(gameId);
-		return "The game with gameId=" + gameId + " has been deleted.";
+		return optionalGame.get();
+	}
+	
+	public void deleteAllGames() {
+		gameRepo.deleteAll();
 	}
 
 }

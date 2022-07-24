@@ -5,6 +5,15 @@ public class GuessRequestBody {
 	private int gameId;
 	private String guess;
 	
+	public GuessRequestBody() {
+		
+	}
+
+	public GuessRequestBody(int gameId, String guess) {
+		this.gameId = gameId;
+		this.guess = guess;
+	}
+
 	public int getGameId() {
 		return gameId;
 	}
