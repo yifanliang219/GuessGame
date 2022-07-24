@@ -14,9 +14,9 @@ import com.yifanliang219.entity.Round;
 @Repository
 public interface GuessNumberGameRepo extends CrudRepository<Game, Integer> {
 
-	@Query("SELECT COUNT(r) FROM Round r WHERE r.gameId = :gameId")
+	@Query("SELECT COUNT(r) FROM Round r WHERE r.roundId.gameId = :gameId")
 	int getNumberOfRoundCompletedOfGame(@Param("gameId") int gameId);
 	
-	@Query("Select r FROM Round r WHERE r.gameId = :gameId")
+	@Query("Select r FROM Round r WHERE r.roundId.gameId = :gameId")
 	List<Round> getRoundsOfGame(@Param("gameId") int gameId, Sort sort);
 }

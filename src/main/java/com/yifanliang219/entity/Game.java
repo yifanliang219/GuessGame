@@ -10,9 +10,6 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
-
 @Entity
 @Table(name = "guessNumberGame")
 public class Game {
@@ -28,7 +25,6 @@ public class Game {
 	private boolean finished;
 
 	@OneToMany(mappedBy = "game", cascade = CascadeType.REMOVE, orphanRemoval = true)
-	@OnDelete(action = OnDeleteAction.CASCADE)
 	private Set<Round> round;
 
 	public Game() {

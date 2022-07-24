@@ -5,13 +5,13 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.yifanliang219.entity.Round;
 import com.yifanliang219.requests.GuessRequestBody;
 import com.yifanliang219.responses.GameResponseBody;
 import com.yifanliang219.services.GuessNumberService;
@@ -24,7 +24,8 @@ public class GuessNumberController {
 
 	@PostMapping("/begin")
 	public ResponseEntity<String> beginNewGame() {
-		return service.beginNewGame();
+		return ResponseEntity.status(HttpStatus.CREATED)
+				.body(service.beginNewGame());
 	}
 
 	@PostMapping("/guess")
@@ -54,6 +55,15 @@ public class GuessNumberController {
 	public ResponseEntity<Object> getRoundsOfGame(@PathVariable int gameId) {
 		try {
 			return ResponseEntity.ok(service.getRoundsOfGame(gameId));
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+		}
+	}
+
+	@DeleteMapping("delete/{gameId}")
+	public ResponseEntity<Object> deleteAGame(@PathVariable int gameId) {
+		try {
+			return ResponseEntity.ok(service.deleteAGame(gameId));
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		}

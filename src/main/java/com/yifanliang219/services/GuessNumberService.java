@@ -8,8 +8,6 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.yifanliang219.entity.Game;
@@ -30,7 +28,7 @@ public class GuessNumberService {
 	@Autowired
 	private RoundRepo roundRepo;
 
-	public ResponseEntity<String> beginNewGame() {
+	public String beginNewGame() {
 
 		List<Integer> digits = new ArrayList<>(Arrays.asList(new Integer[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }));
 		String answer = "";
@@ -42,8 +40,7 @@ public class GuessNumberService {
 		}
 		Game game = new Game(answer);
 		gameRepo.save(game);
-		return ResponseEntity.status(HttpStatus.CREATED)
-				.body("New game with gameId=" + game.getGameId() + " is created.");
+		return "New game with gameId=" + game.getGameId() + " is created.";
 
 	}
 
@@ -78,7 +75,7 @@ public class GuessNumberService {
 			gameRepo.save(game);
 		}
 		int thisRound = gameRepo.getNumberOfRoundCompletedOfGame(gameId) + 1;
-		Round round = new Round(gameId, thisRound, guess, result);
+		Round round = new Round(game, thisRound, guess, result);
 		roundRepo.save(round);
 		return round;
 	}
@@ -105,6 +102,14 @@ public class GuessNumberService {
 		if (optionalGame.isEmpty())
 			throw new GameNotFoundException(gameId);
 		return gameRepo.getRoundsOfGame(gameId, Sort.by(Direction.ASC, "gameId"));
+	}
+	
+	public String deleteAGame(int gameId) {
+		Optional<Game> optionalGame = gameRepo.findById(gameId);
+		if (optionalGame.isEmpty())
+			throw new GameNotFoundException(gameId);
+		gameRepo.deleteById(gameId);
+		return "The game with gameId=" + gameId + " has been deleted.";
 	}
 
 }
